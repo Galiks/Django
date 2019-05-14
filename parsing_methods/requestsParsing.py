@@ -9,6 +9,9 @@ from parsing_methods.shop import Shop
 
 
 class RequestsParsing(Parsing):
+    def get_name_class(self):
+        return type(self).__name__
+
     __address = "https://www.kopikot.ru/"
 
     def __init__(self):

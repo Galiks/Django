@@ -11,6 +11,9 @@ from parsing_methods.shop import Shop
 
 class BS4Parsing(Parsing):
 
+    def get_name_class(self):
+        return type(self).__name__
+
     def __init__(self):
         pass
 

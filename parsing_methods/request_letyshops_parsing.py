@@ -10,6 +10,9 @@ from parsing_methods.parsingAbstractClass import Parsing
 
 
 class RequestsLetyShopsParsing(Parsing):
+    def get_name_class(self):
+        return type(self).__name__
+
     __address = 'https://letyshops.com/shops?page='
 
     def __init__(self):

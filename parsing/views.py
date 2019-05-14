@@ -1,3 +1,5 @@
+import time
+
 from django.http import HttpResponse
 from django.shortcuts import get_list_or_404, render
 from django.template import loader
@@ -26,15 +28,19 @@ def parse(request):
     Shop.objects.all().delete()
     Timer.objects.all().delete()
     methods = [
-        RequestsParsing(),
-         BS4Parsing(),
-         WebDriverParsing(),
-         RequestsLetyShopsParsing(),
+            # RequestsParsing(),
+            # BS4Parsing(),
+            # WebDriverParsing(),
+            RequestsLetyShopsParsing(),
         ]
     shops = []
     for method in methods:
         try:
+            start_time = time.time()
             shops.append(method.parsing())
+            timer = Timer(name=method.get_name_class(),
+                          time=(time.time() - start_time))
+            timer.save()
         except Exception as e:
             continue
     shop_list = []
