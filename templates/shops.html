@@ -5,6 +5,10 @@
     <title>Магазины</title>
 </head>
 <body>
+
+    <form action="{% url 'parse' %}" method="get">
+        <input type="submit" value="Обновить">
+    </form>
     {% if shop_list %}
         <table border="1">
         {% for shop in shop_list %}
@@ -23,7 +27,6 @@
                 </td>
             </tr>
         {% endfor %}
-
         </table>
     {% endif %}
 </body>

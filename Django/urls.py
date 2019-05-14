@@ -21,5 +21,6 @@ import parsing.views as view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', view.index, name='index'),
-    path('shops/', view.shops, name='shops')
+    path('shops/', view.shops, name='shops'),
+    path('parser/', view.parse, name='parse'),
 ]
