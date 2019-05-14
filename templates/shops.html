@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Магазины</title>
+</head>
+<body>
+    {% if shop_list %}
+        <table border="1">
+        {% for shop in shop_list %}
+            <tr>
+                <td>
+                    {{ shop.name }}
+                </td>
+                <td>
+                    {{ shop.discount }} {{ shop.label }}
+                </td>
+                <td>
+                    <img src="{{ shop.image }}">
+                </td>
+                <td>
+                    <a href="{{ shop.url }}">Ссылка на сайт</a>
+                </td>
+            </tr>
+        {% endfor %}
+
+        </table>
+    {% endif %}
+</body>
+</html>
