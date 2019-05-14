@@ -4,9 +4,9 @@ from multiprocessing import Pool
 import requests
 from bs4 import BeautifulSoup
 
-import parsing_methods.shop as s
 import parsing_methods.valueForParsing as v
 from parsing_methods.parsingAbstractClass import Parsing
+from parsing_methods.shop import Shop
 
 
 class BS4Parsing(Parsing):
@@ -15,7 +15,7 @@ class BS4Parsing(Parsing):
         pass
 
     def parsing(self):
-        """Возвращает список списков элементов"""
+        """Возвращает список элементов"""
         urls = []
         start_time = time.time()
         max_page = self.__max_page()
@@ -24,7 +24,11 @@ class BS4Parsing(Parsing):
         pool = Pool(processes=4)
         result = pool.map(self.parse_elements, urls)
         print(time.time() - start_time)
-        return result
+        shops = []
+        for items in result:
+            for item in items:
+                shops.append(item)
+        return shops
 
     def parse_elements(self, url):
         result = []
@@ -36,7 +40,7 @@ class BS4Parsing(Parsing):
             label = self.__get_label(shop)
             url = self.__get_url(shop)
             image = self.__get_image(shop)
-            item = s.Shop(name, discount, label, url, image)
+            item = Shop(name=name, discount=discount, label=label, url=url, image=image)
             result.append(item)
         return result
 

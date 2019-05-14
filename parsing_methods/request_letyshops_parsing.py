@@ -4,9 +4,9 @@ from multiprocessing.pool import Pool
 import requests
 from bs4 import BeautifulSoup
 
+import parsing_methods.shop as s
 import parsing_methods.valueForParsing as v
 from parsing_methods.parsingAbstractClass import Parsing
-import parsing_methods.shop as s
 
 
 class RequestsLetyShopsParsing(Parsing):
@@ -16,15 +16,18 @@ class RequestsLetyShopsParsing(Parsing):
         pass
 
     def parsing(self):
-        """Возвращает список списков элементов"""
+        """Возвращает список элементов"""
         pool = Pool(processes=4)
         start_time = time.time()
         max_page = self.__max_page()
         all_items = pool.map(self.get_response, range(1, max_page + 1))
         result = pool.map(self.parse_elements, all_items)
         print(time.time() - start_time)
-        return result
-
+        shops = []
+        for items in result:
+            for shop in items:
+                shops.append(shop)
+        return shops
 
     def get_response(self, i):
         url = "https://letyshops.com/shops"

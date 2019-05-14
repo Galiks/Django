@@ -1,9 +1,7 @@
 import logging
 import re
-import sys
 import time
 from distutils.file_util import copy_file
-from multiprocessing import current_process
 from multiprocessing.pool import Pool
 
 from bs4 import BeautifulSoup
@@ -16,8 +14,10 @@ from parsing_methods.shop import Shop
 class Copier(object):
     def __init__(self, tgtdir):
         self.target_dir = tgtdir
+
     def __call__(self, src):
         copy_file(src, self.target_dir)
+
 
 class WebDriverParsing(Parsing):
     logger = logging.getLogger("WebDriverParsing")

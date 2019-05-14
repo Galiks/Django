@@ -2,8 +2,11 @@ from django.http import HttpResponse
 from django.shortcuts import get_list_or_404, render
 from django.template import loader
 
+from parsing_methods.ds4Parsing import BS4Parsing
+from parsing_methods.request_letyshops_parsing import RequestsLetyShopsParsing
 from parsing_methods.requestsParsing import RequestsParsing
-from .models import Shop
+from parsing_methods.webDriverParsing import WebDriverParsing
+from .models import Shop, Timer
 
 
 # Create your views here.
@@ -20,14 +23,29 @@ def shops(request):
 
 
 def parse(request):
-    parsing = RequestsParsing()
-    shops = parsing.parsing()
+    Shop.objects.all().delete()
+    Timer.objects.all().delete()
+    methods = [
+        RequestsParsing(),
+         BS4Parsing(),
+         WebDriverParsing(),
+         RequestsLetyShopsParsing(),
+        ]
+    shops = []
+    for method in methods:
+        try:
+            shops.append(method.parsing())
+        except Exception as e:
+            continue
     shop_list = []
     for shop in shops:
         for item in shop:
             shop_list.append(item)
     for shop in shop_list:
-        new_shop = Shop(name=shop.name, discount=shop.discount, label=shop.label, url=shop.url, image=shop.image)
-        new_shop.save()
+        try:
+            new_shop = Shop(name=shop.name, discount=shop.discount, label=shop.label, url=shop.url, image=shop.image)
+            new_shop.save()
+        except AttributeError as e:
+            continue
     context = {'shop_list': shop_list}
     return render(request, 'shops.html', context)

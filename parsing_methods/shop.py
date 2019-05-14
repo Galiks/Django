@@ -1,3 +1,6 @@
+from scrapy.crawler import CrawlerProcess
+
+
 class Shop:
     name = ''
     discount = ''

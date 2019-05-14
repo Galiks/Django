@@ -15,14 +15,17 @@ class RequestsParsing(Parsing):
         pass
 
     def parsing(self):
-        """Возвращает список списков элементов"""
+        """Возвращает список элементов"""
         i = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300]
         pool = Pool(processes=4)
         start_time = time.time()
         all_items = (pool.map(self.get_json, i))
         result = pool.map(self.parse_elements, all_items)
         print(time.time() - start_time)
-        return result
+        shops = []
+        for item in result:
+            shops.append(item)
+        return shops
 
     def get_json(self, i):
         url = "https://d289b99uqa0t82.cloudfront.net/sites/5/campaigns_limit_100_offset_" + str(

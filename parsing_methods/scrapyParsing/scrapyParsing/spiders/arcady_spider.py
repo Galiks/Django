@@ -4,23 +4,8 @@ from bs4 import BeautifulSoup
 from scrapy import Request
 from scrapy.crawler import CrawlerProcess
 
-import valueForParsing as v
-
-
-class MaxPageSpider(scrapy.Spider):
-    name = 'maxpage'
-    address = "https://letyshops.com/shops?page=1"
-    last_page_of_site = []
-
-    def start_requests(self):
-        start_urls = [self.address]
-        for start_url in start_urls:
-            Request(url=start_url, callback=self.parse)
-
-    def parse(self, response):
-        last_page = response.xpath('//ul[@class="b-pagination js-pagination"]/li[5]/a/text()').extract()
-        self.last_page_of_site.append(last_page)
-        return last_page
+import parsing_methods.valueForParsing as v
+from parsing_methods.scrapyParsing.scrapyParsing.items import Shop
 
 
 class ArcadySpider(scrapy.Spider):
@@ -29,26 +14,24 @@ class ArcadySpider(scrapy.Spider):
 
     def start_requests(self):
         start_urls = []
-        for i in range(1, 31):
+        result = []
+        max_page = self.__max_page()
+        for i in range(1, max_page+1):
             start_urls.append(self.address + i.__str__())
         for url in start_urls:
-            yield Request(url=url, callback=self.parse)
+            result.append(Request(url=url, callback=self.parse))
+        return result
 
     def parse(self, response):
         shops = response.xpath('//a[@class="b-teaser__inner"]')
         for i, shop in enumerate(shops):
-            name = self.get_name(shop, i)
-            url = self.get_url(shop, i)
-            discount = self.get_discount(shop, i)
-            label = self.get_label(shop, i)
-            image = self.get_image(shop, i)
-            yield {
-                "name": name,
-                "url": url,
-                "discount": discount,
-                "label": label,
-                "image": image
-            }
+            item = Shop()
+            item['name'] = self.get_name(shop, i)
+            item['url'] = self.get_url(shop, i)
+            item['discount'] = self.get_discount(shop, i)
+            item['label'] = self.get_label(shop, i)
+            item['image'] = self.get_image(shop, i)
+            yield item
 
     def get_name(self, shop, i):
         name = shop.xpath('//div[@class="b-teaser__title"]//text()').extract()
