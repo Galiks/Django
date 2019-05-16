@@ -24,8 +24,9 @@ class RequestsParsing(Parsing):
         all_items = (pool.map(self.get_json, i))
         result = pool.map(self.parse_elements, all_items)
         shops = []
-        for item in result:
-            shops.append(item)
+        for items in result:
+            for item in items:
+                shops.append(item)
         return shops
 
     def get_json(self, i):
@@ -89,4 +90,6 @@ class RequestsParsing(Parsing):
 
 if __name__ == '__main__':
     parser = RequestsParsing()
-    parser.parsing()
+    result = parser.parsing()
+    for item in result:
+        print(item)

@@ -21,11 +21,9 @@ class RequestsLetyShopsParsing(Parsing):
     def parsing(self):
         """Возвращает список элементов"""
         pool = Pool(processes=4)
-        start_time = time.time()
         max_page = self.__get_max_page()
         all_items = pool.map(self.get_response, range(1, max_page + 1))
         result = pool.map(self.parse_elements, all_items)
-        print(time.time() - start_time)
         shops = []
         for items in result:
             for shop in items:

@@ -6,7 +6,7 @@ import time
 
 from django.conf import settings
 from django.http import HttpResponse, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from openpyxl import Workbook
 
 from parsing_methods.ds4Parsing import BS4Parsing
@@ -47,7 +47,7 @@ def parse(request):
     Shop.objects.all().delete()
     Timer.objects.all().delete()
     methods = [
-        RequestsParsing(),
+        # RequestsParsing(),
         BS4Parsing(),
         WebDriverParsing(),
         RequestsLetyShopsParsing(),
@@ -67,7 +67,7 @@ def parse(request):
     # except Exception as e:
     #     logger.error("Ошибка при запуске Scrapy: " + e.__str__())
     context = {'shop_list': save_shops_in_database(shops_list)}
-    return render(request, 'shops.html', context)
+    return redirect('/shops')
 
 
 def run_scrapy_and_save_data():

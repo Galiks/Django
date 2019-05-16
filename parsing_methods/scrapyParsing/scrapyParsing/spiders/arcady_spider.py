@@ -1,6 +1,9 @@
+import csv
 import io
 import json
 import os
+import time
+from datetime import datetime
 
 import requests
 import scrapy
@@ -40,9 +43,12 @@ class MainClassForScrapy():
 
     def __init__(self):
         self.delete_file(self.file_name)
+        start_time = time.time()
         process = CrawlerProcess()
         process.crawl(ArcadySpider)
         process.start()
+        end_time = time.time()
+        self.create_file_with_time(end_time - start_time)
         self.create_json_file(items)
 
     def get_data_from_json(self):
@@ -59,6 +65,19 @@ class MainClassForScrapy():
     def delete_file(self, file):
         if os.path.exists(file):
             os.remove(file)
+
+    def create_file_with_time(self, timer):
+        now_date = datetime.today()
+        file_name_for_time = 'E:/Документы/PyCharmProject/Django/files/times_of_scrapy_for_' \
+                             + str(now_date).replace(':', '.') + '.csv'
+        with open(file_name_for_time, 'w') as file:
+            columns = ['name', 'time', 'date']
+            writer = csv.DictWriter(file, fieldnames=columns)
+            new_time = {'name': 'ArcadySpider',
+                        'time': timer,
+                        'date': datetime.today(),
+                        }
+            writer.writerow(new_time)
 
 
 class ArcadySpider(scrapy.Spider):
@@ -129,4 +148,4 @@ class ArcadySpider(scrapy.Spider):
 
 
 if __name__ == '__main__':
-    pass
+    main = MainClassForScrapy()
