@@ -23,4 +23,7 @@ urlpatterns = [
     path('', view.index, name='index'),
     path('shops/', view.shops, name='shops'),
     path('parser/', view.parse, name='parse'),
+    path('excel/', view.download_shops_in_excel, name='download_shops_in_excel'),
+    path('timer/', view.download_times_in_excel, name='download_times_in_excel'),
+    path('csv/', view.download_shops_in_csv, name='download_shops_in_csv'),
 ]

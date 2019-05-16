@@ -130,11 +130,3 @@ class ArcadySpider(scrapy.Spider):
 
 if __name__ == '__main__':
     pass
-    # process = CrawlerProcess()
-    # process.crawl(ArcadySpider)
-    # process.start()
-    # get_json_file(items)
-    # with io.open(file_name, 'r', encoding='utf8') as file:
-    #     data = json.load(file)
-    #     print(data)
-    #     file.close()

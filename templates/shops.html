@@ -5,10 +5,44 @@
     <title>Магазины</title>
 </head>
 <body>
-
-    <form action="{% url 'parse' %}" method="get">
-        <input type="submit" value="Обновить">
-    </form>
+<div class="container">
+    <div class="row">
+        <div class="span5">
+            <table class="table table-striped table-condensed table-bordered" border="1">
+                <tbody>
+                <tr>
+                    <th>Обновить таблицу</th>
+                    <th>Сохранить данные в Excel</th>
+                    <th>Сохранить данные в CSV</th>
+                    <th>Сохранить данные о времени в Excel</th>
+                </tr>
+                <tr>
+                    <td>
+                        <form action="{% url 'parse' %}" method="get">
+                            <input type="submit" value="Обновить">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{% url 'download_shops_in_excel' %}" method="get">
+                            <input type="submit" value="Сохранить в Excel">
+                        </form>
+                    </td>
+                    <td>
+                         <form action="{% url 'download_shops_in_csv' %}" method="get">
+                            <input type="submit" value="Сохранить в CSV">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{% url 'download_times_in_excel' %}" method="get">
+                            <input type="submit" value="Сохранить время в Excel">
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
     {% if shop_list %}
         <table border="1">
         {% for shop in shop_list %}
