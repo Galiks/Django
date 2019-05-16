@@ -34,7 +34,6 @@ class WebDriverParsing(Parsing):
 
     def parsing(self):
         """Возвращает список элементов"""
-        start_time = time.time()
         global driver
         try:
             driver = webdriver.Chrome(
@@ -56,7 +55,6 @@ class WebDriverParsing(Parsing):
                 shops_str.append(shop.__str__())
             pool = Pool(processes=4)
             result = pool.map(func=self.parse_elements, iterable=shops_str)
-            print(time.time() - start_time)
             return result
         finally:
             driver.close()

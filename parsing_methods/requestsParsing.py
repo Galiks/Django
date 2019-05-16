@@ -21,10 +21,8 @@ class RequestsParsing(Parsing):
         """Возвращает список элементов"""
         i = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300]
         pool = Pool(processes=4)
-        start_time = time.time()
         all_items = (pool.map(self.get_json, i))
         result = pool.map(self.parse_elements, all_items)
-        print(time.time() - start_time)
         shops = []
         for item in result:
             shops.append(item)

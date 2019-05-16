@@ -1,45 +1,104 @@
+import io
+import json
+import os
+
 import requests
 import scrapy
 from bs4 import BeautifulSoup
-from scrapy import Request
 from scrapy.crawler import CrawlerProcess
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import Rule
 
 import parsing_methods.valueForParsing as v
-from parsing_methods.scrapyParsing.scrapyParsing.items import Shop
+
+items = []
+
+
+def get_max_page():
+    soup = BeautifulSoup(get_Html(v.letyShops), 'lxml')
+    new_pages = []
+    pages = soup.find_all('a', class_='b-pagination__link')
+    for page in pages:
+        new_page = int(page.get('data-page'))
+        new_pages.append(new_page)
+    return max(new_pages)
+
+
+def get_Html(url):
+    try:
+        r = requests.get(url)
+        return r.text
+    except ConnectionError as e:
+        print("Error")
+
+
+class MainClassForScrapy():
+    """Класс для запуска паука и записи данных в json"""
+    file_name = 'E:/Документы/PyCharmProject/Django/files/shops.json'
+
+    items = []
+
+    def __init__(self):
+        self.delete_file(self.file_name)
+        process = CrawlerProcess()
+        process.crawl(ArcadySpider)
+        process.start()
+        self.create_json_file(items)
+
+    def get_data_from_json(self):
+        with io.open(self.file_name, 'r', encoding='utf8') as file:
+            data = json.load(file)
+            file.close()
+            return data
+
+    def create_json_file(self, shops):
+        with io.open(self.file_name, 'a+', encoding='utf8') as file:
+            json.dump(shops, file, indent=2, ensure_ascii=False)
+            file.close()
+
+    def delete_file(self, file):
+        if os.path.exists(file):
+            os.remove(file)
 
 
 class ArcadySpider(scrapy.Spider):
     name = "arcady"
     address = "https://letyshops.com/shops?page="
+    clear_address = 'https://letyshops.com'
+    allowed_domains = ['https://letyshops.com']
+    start_urls = []
+    max_page = get_max_page()
+    for i in range(1, max_page + 1):
+        start_urls.append(address + i.__str__())
 
-    def start_requests(self):
-        start_urls = []
-        result = []
-        max_page = self.__max_page()
-        for i in range(1, max_page+1):
-            start_urls.append(self.address + i.__str__())
-        for url in start_urls:
-            result.append(Request(url=url, callback=self.parse))
-        return result
+    rules = (
+        Rule(LinkExtractor(allow=('')), callback="parse", follow=True)
+    )
 
     def parse(self, response):
-        shops = response.xpath('//a[@class="b-teaser__inner"]')
+        shops = response.xpath('//div[@class="b-teaser"]')
         for i, shop in enumerate(shops):
-            item = Shop()
-            item['name'] = self.get_name(shop, i)
-            item['url'] = self.get_url(shop, i)
-            item['discount'] = self.get_discount(shop, i)
-            item['label'] = self.get_label(shop, i)
-            item['image'] = self.get_image(shop, i)
-            yield item
+            item = {
+                'name': self.get_name(shop, i),
+                'discount': self.get_discount(shop, i),
+                'label': self.get_label(shop, i),
+                'image': self.get_image(shop, i),
+                'url': self.get_url(shop, i)
+            }
+            items.append(item)
+        return items
 
     def get_name(self, shop, i):
-        name = shop.xpath('//div[@class="b-teaser__title"]//text()').extract()
-        return name[i]
+        index = i + 1
+        name = shop.xpath(
+            '//div[@class="b-teaser"][' + index.__str__() + ']//div[@class="b-teaser__title"]//text()').get().strip()
+        return name
 
     def get_url(self, shop, i):
-        url = shop.xpath('//a[@class="b-teaser__inner"]/@href').extract()
-        return url[i]
+        index = i + 1
+        url = shop.xpath(
+            '//div[@class="b-teaser"][' + index.__str__() + ']//a[@class="b-teaser__inner"]/@href').extract()
+        return self.clear_address.__str__() + url[0]
 
     def get_discount(self, shop, i):
         index = i + 1
@@ -54,37 +113,28 @@ class ArcadySpider(scrapy.Spider):
 
     def get_label(self, shop, i):
         index = i + 1
-        label = shop.xpath('//div[@class="b-teaser"]/a//span[@class="b-shop-teaser__label "]/text()').get()
+        label = shop.xpath(
+            '//div[@class="b-teaser"][' + index.__str__() + ']/a//span[@class="b-shop-teaser__label "]/text()').get()
         if label is None:
             label = shop.xpath(
-                '//div[@class="b-teaser"]/a//span[@class="b-shop-teaser__label b-shop-teaser__label--red"]/text()')
+                '//div[@class="b-teaser"][' + index.__str__() + ']/a//span[@class="b-shop-teaser__label b-shop-teaser__label--red"]/text()')
             return label
         return label
 
     def get_image(self, shop, i):
         index = i + 1
-        image = shop.xpath('//div[' + index.__str__() + ']//div[@class="b-teaser__cover"]/img/@src').extract()
+        image = shop.xpath(
+            '//div[@class="b-teaser"][' + index.__str__() + ']//div[@class="b-teaser__cover"]/img/@src').extract()
         return image
-
-    def __max_page(self):
-        soup = BeautifulSoup(self.__get_Html(v.letyShops), 'lxml')
-        new_pages = []
-        pages = soup.find_all('a', class_='b-pagination__link')
-        for page in pages:
-            new_page = int(page.get('data-page'))
-            new_pages.append(new_page)
-        return max(new_pages)
-
-    def __get_Html(self, url):
-        try:
-            r = requests.get(url)
-            return r.text
-        except ConnectionError as e:
-            print("Error")
 
 
 if __name__ == '__main__':
-    process = CrawlerProcess()
-    arcady = ArcadySpider()
-    process.crawl(arcady)
-    process.start()
+    pass
+    # process = CrawlerProcess()
+    # process.crawl(ArcadySpider)
+    # process.start()
+    # get_json_file(items)
+    # with io.open(file_name, 'r', encoding='utf8') as file:
+    #     data = json.load(file)
+    #     print(data)
+    #     file.close()

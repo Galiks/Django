@@ -22,7 +22,7 @@ class RequestsLetyShopsParsing(Parsing):
         """Возвращает список элементов"""
         pool = Pool(processes=4)
         start_time = time.time()
-        max_page = self.__max_page()
+        max_page = self.__get_max_page()
         all_items = pool.map(self.get_response, range(1, max_page + 1))
         result = pool.map(self.parse_elements, all_items)
         print(time.time() - start_time)
@@ -101,7 +101,7 @@ class RequestsLetyShopsParsing(Parsing):
         else:
             print("Пустой список")
 
-    def __max_page(self):
+    def __get_max_page(self):
         soup = BeautifulSoup(self.__get_Html(v.letyShops), 'lxml')
         new_pages = []
         pages = soup.find_all('a', class_='b-pagination__link')

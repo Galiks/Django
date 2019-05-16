@@ -14,6 +14,11 @@ BOT_NAME = 'scrapyParsing'
 SPIDER_MODULES = ['scrapyParsing.spiders']
 NEWSPIDER_MODULE = 'scrapyParsing.spiders'
 
+FEED_EXPORTERS = {
+ 'jsonlines': 'scrapy.contrib.exporter.JsonLinesItemExporter',
+}
+FEED_FORMAT = 'jsonlines'
+FEED_URI = "E:\Документы\PyCharmProject\Django\parsing_methods\scrapyParsing\scrapyParsing\Shops.json"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scrapyParsing (+http://www.yourdomain.com)'
@@ -64,9 +69,11 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'scrapyParsing.pipelines.ScrapyparsingPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   # 'scrapyParsing.pipelines.JobScraperPipeline': 100,
+   # 'scrapyParsing.pipelines.DuplicatesPipeline': 500,
+   'scrapyParsing.pipelines.JsonExportPipeline': 500,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

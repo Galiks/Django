@@ -1,4 +1,4 @@
-from scrapy.crawler import CrawlerProcess
+from parsing_methods.scrapyParsing.scrapyParsing.spiders.arcady_spider import MainClassForScrapy
 
 
 class Shop:
@@ -20,3 +20,10 @@ class Shop:
 
     def __str__(self):
         return '({}, {}{}, {}, {})'.format(self.name, self.discount, self.label, self.image, self.url)
+
+
+if __name__ == '__main__':
+    method = MainClassForScrapy()
+    items = method.get_data_from_json()
+    for item in items:
+        print(item["name"])

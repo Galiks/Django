@@ -20,13 +20,11 @@ class BS4Parsing(Parsing):
     def parsing(self):
         """Возвращает список элементов"""
         urls = []
-        start_time = time.time()
-        max_page = self.__max_page()
+        max_page = self.__get_max_page()
         for i in range(1, max_page + 1):
             urls.append(v.url_for_parsing_letyShops + str(i))
         pool = Pool(processes=4)
         result = pool.map(self.parse_elements, urls)
-        print(time.time() - start_time)
         shops = []
         for items in result:
             for item in items:
@@ -43,8 +41,8 @@ class BS4Parsing(Parsing):
             label = self.__get_label(shop)
             url = self.__get_url(shop)
             image = self.__get_image(shop)
-            item = Shop(name=name, discount=discount, label=label, url=url, image=image)
-            result.append(item)
+            if name is not None and discount is not None and label is not None and image is not None and url is not None:
+                result.append(Shop(name=name, discount=discount, label=label, image=image, url=url))
         return result
 
     def __get_image(self, shop):
@@ -56,12 +54,14 @@ class BS4Parsing(Parsing):
         return v.clear_url_letyShops + url
 
     def __get_label(self, shop):
-        label = shop.find('span', class_='b-shop-teaser__label')
+        label = shop.find('span', class_='b-shop-teaser__label ')
         if label is None:
             label = shop.find('span', class_='b-shop-teaser__label--red')
+            if label is None:
+                label = shop.find_all('span', class_='b-shop-teaser__label')[-1]
         else:
-            label = label.text.strip()
-        return label
+            label = label
+        return label.text.strip()
 
     def __get_discount(self, shop):
         discount = shop.find('span', class_='b-shop-teaser__cash')
@@ -82,7 +82,7 @@ class BS4Parsing(Parsing):
         except ConnectionError as e:
             print("Error")
 
-    def __max_page(self):
+    def __get_max_page(self):
         soup = BeautifulSoup(self.__get_Html(v.letyShops), 'lxml')
         new_pages = []
         pages = soup.find_all('a', class_='b-pagination__link')
