@@ -91,7 +91,7 @@ class ArcadySpider(scrapy.Spider):
         start_urls.append(address + i.__str__())
 
     rules = (
-        Rule(LinkExtractor(allow=('')), callback="parse", follow=True)
+        Rule(LinkExtractor(allow=('')), callback="parse", follow=False)
     )
 
     def parse(self, response):
@@ -135,6 +135,7 @@ class ArcadySpider(scrapy.Spider):
         label = shop.xpath(
             '//div[@class="b-teaser"][' + index.__str__() + ']/a//span[@class="b-shop-teaser__label "]/text()').get()
         if label is None:
+
             label = shop.xpath(
                 '//div[@class="b-teaser"][' + index.__str__() + ']/a//span[@class="b-shop-teaser__label b-shop-teaser__label--red"]/text()')
             return label

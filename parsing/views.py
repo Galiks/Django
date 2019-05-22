@@ -8,6 +8,7 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 from parsing_methods.ds4Parsing import BS4Parsing
 from parsing_methods.request_letyshops_parsing import RequestsLetyShopsParsing
@@ -47,7 +48,7 @@ def parse(request):
     Shop.objects.all().delete()
     Timer.objects.all().delete()
     methods = [
-        # RequestsParsing(),
+        RequestsParsing(),
         BS4Parsing(),
         WebDriverParsing(),
         RequestsLetyShopsParsing(),
@@ -124,6 +125,7 @@ def download_times_in_excel(request):
             return response
     raise Http404
 
+
 def download_shops_in_csv(request):
     save_shops_in_csv()
     file_path = os.path.join(settings.MEDIA_ROOT, file_name_for_shops_csv)
@@ -152,6 +154,9 @@ def save_shops_in_excel():
         worksheet['C' + str(index_of_row)] = shop.label
         worksheet['D' + str(index_of_row)] = shop.image
         worksheet['E' + str(index_of_row)] = shop.url
+    worksheet.column_dimensions[get_column_letter(1)].width = 50
+    for i in range(4, 6):
+        worksheet.column_dimensions[get_column_letter(i)].width = 200
     workbook.save(file_name_for_shops_excel)
     workbook.close()
 
@@ -169,6 +174,8 @@ def save_times_in_excel():
         worksheet['A' + str(index_of_row)] = timer.name
         worksheet['B' + str(index_of_row)] = timer.time
         worksheet['C' + str(index_of_row)] = timer.date
+    for i in range(1, 4):
+        worksheet.column_dimensions[get_column_letter(i)].width = 100
     workbook.save(file_name_for_times_excel)
     workbook.close()
 

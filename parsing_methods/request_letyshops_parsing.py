@@ -73,7 +73,7 @@ class RequestsLetyShopsParsing(Parsing):
         return v.clear_url_letyShops + url
 
     def __get_label(self, shop):
-        label = shop.find('span', class_='b-shop-teaser__label')
+        label = shop.find_all('span', class_='b-shop-teaser__label')[-1]
         if label is None:
             label = shop.find('span', class_='b-shop-teaser__label--red')
         else:
@@ -118,4 +118,6 @@ class RequestsLetyShopsParsing(Parsing):
 
 if __name__ == '__main__':
     parser = RequestsLetyShopsParsing()
+    start = time.time()
     parser.parsing()
+    print(time.time() - start)

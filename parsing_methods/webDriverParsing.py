@@ -29,6 +29,8 @@ class WebDriverParsing(Parsing):
 
     __file_path_to_Chrome = "E:\Документы\PyCharmProject\Parsing-on-python\chromedriver_win32\chromedriver.exe"
 
+    address = "https://megabonus.com/feed"
+
     def __init__(self):
         pass
 
@@ -38,7 +40,7 @@ class WebDriverParsing(Parsing):
         try:
             driver = webdriver.Chrome(
                 self.__file_path_to_Chrome)
-            driver.get("https://megabonus.com/feed")
+            driver.get(self.address)
             button = driver.find_element_by_class_name("see-more")
             button.click()
             while button.is_displayed():
@@ -111,7 +113,7 @@ class WebDriverParsing(Parsing):
 
     def get_url(self, element):
         try:
-            return element.find('div', class_='holder-img').find('a').get('href')
+            return self.address + element.find('div', class_='holder-img').find('a').get('href')
         except Exception as e:
             self.logger.error(e)
 

@@ -1,4 +1,3 @@
-import time
 from multiprocessing import Pool
 
 import requests
@@ -54,11 +53,9 @@ class BS4Parsing(Parsing):
         return v.clear_url_letyShops + url
 
     def __get_label(self, shop):
-        label = shop.find('span', class_='b-shop-teaser__label ')
+        label = shop.find_all('span', class_='b-shop-teaser__label')[-1]
         if label is None:
             label = shop.find('span', class_='b-shop-teaser__label--red')
-            if label is None:
-                label = shop.find_all('span', class_='b-shop-teaser__label')[-1]
         else:
             label = label
         return label.text.strip()
@@ -100,5 +97,4 @@ class BS4Parsing(Parsing):
 
 
 if __name__ == '__main__':
-    parser = BS4Parsing()
-    parser.parsing()
+    pass
